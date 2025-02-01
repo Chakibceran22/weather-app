@@ -6,7 +6,6 @@ const SearchBar = () => {
 
 
     return (
-
         <div className="relative mb-6" >
             <input
                 type="text"
