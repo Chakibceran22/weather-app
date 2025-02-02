@@ -16,13 +16,15 @@ const WeatherApp = () => {
             setIsLoading(true)
             try {
                 if (location == '') {
-                    const forcast = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=auto:ip&days=7`)
+                    const forcast = await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=auto:ip&days=7`)
                     setWeather(forcast.data)
+                    setIsLoading(false)
                 }
                 else{
                     try{
-                        const forecast = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7`)
+                        const forecast = await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7`)
                         setWeather(forecast.data)
+                        setIsLoading(false)
                     }catch(error)
                     {
                         alert("Error in Country. Please try again.")
@@ -31,9 +33,7 @@ const WeatherApp = () => {
 
             } catch (error) {
                 alert('An error occurred. Please try again.')
-            } finally {
-                setIsLoading(false)
-            }
+            } 
         }
         fetchWeatherData()
 
