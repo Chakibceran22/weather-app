@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 
-const SearchBar = ({ isNightMode }) => {
-    const [location, setLocation] = useState('');
+const SearchBar = ({ isNightMode, location, setLocation }) => {
     const [isFocused, setIsFocused] = useState(false);
-
+    
+    const handleLocationSearch = () => {
+        console.log(location);
+    }
     const searchBg = isNightMode
         ? "bg-gray-800/30"
         : "bg-white/20";
@@ -33,6 +35,7 @@ const SearchBar = ({ isNightMode }) => {
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 
                     p-2 text-white/70 hover:text-white transition-colors 
                     duration-300 rounded-full hover:bg-white/10"
+                onClick={handleLocationSearch}
             >
                 <Search className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
