@@ -11,8 +11,9 @@ const Weather = () => {
     // })
     useEffect(() => {
         const fecthData = async() => {
-            const response  = await axios.get(`http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=auto:ip`)
-            console.log(response)
+            const forCast = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=auto:ip&days=3`)
+
+            console.log(forCast)
         }
         fecthData()
     })
