@@ -1,23 +1,54 @@
 import React, { useState } from 'react';
-import { Search, Cloud, Sun, CloudRain, } from 'lucide-react';
+import { Search } from 'lucide-react';
 
-const SearchBar = () => {
-    const [location, setLocation] = useState('');
+const SearchBar = ({ isNightMode, location, setLocation }) => {
+    const [isFocused, setIsFocused] = useState(false);
+    const [query, setQuery] = useState('');
+    
+    const handleLocationSearch = async() => {
+        setLocation(query);
+        setQuery('');
+    }
+    const handleKeyDown = async(e) => {
+        if(e.key == 'Enter'){
+            await handleLocationSearch()
+        }
+    }
+    const searchBg = isNightMode
+        ? "bg-gray-800/30"
+        : "bg-white/20";
 
+    const focusRing = isFocused
+        ? isNightMode
+            ? "ring-2 ring-blue-400"
+            : "ring-2 ring-white"
+        : "";
 
     return (
-
-        <div className="relative mb-6" >
+        <div className="relative mb-4 sm:mb-6">
             <input
                 type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                onKeyDown={handleKeyDown}
                 placeholder="Search location..."
-                className="w-full p-4 pr-12 rounded-lg bg-white/20 backdrop-blur-md text-white placeholder-white/70 outline-none"
+                className={`w-full p-3 sm:p-4 pr-12 rounded-lg ${searchBg} 
+                    backdrop-blur-md text-white placeholder-white/70 
+                    outline-none transition-all duration-300 
+                    hover:bg-opacity-40 ${focusRing}`}
             />
-            <Search className="absolute right-4 top-4 text-white/70" />
-        </div >
-
+            <button 
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 
+                    p-2 text-white/70 hover:text-white transition-colors 
+                    duration-300 rounded-full hover:bg-white/10"
+                // onClick={handleLocationSearch}
+                
+            >
+                <Search className="h-5 w-5 sm:h-6 sm:w-6" />
+            </button>
+        </div>
     );
 };
 

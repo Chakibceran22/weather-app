@@ -1,11 +1,10 @@
 // src/App.jsx
 import React from 'react';
-import SearchBar from './componenets/SearchBar';
-
+import WeatherApp from './componenets/WeatherApp';
 function App() {
   return (
     <>
-    <SearchBar />
+    <WeatherApp />
     </>
   );
 }
