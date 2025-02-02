@@ -3,9 +3,11 @@ import { Search } from 'lucide-react';
 
 const SearchBar = ({ isNightMode, location, setLocation }) => {
     const [isFocused, setIsFocused] = useState(false);
+    const [query, setQuery] = useState('');
     
-    const handleLocationSearch = () => {
-        console.log(location);
+    const handleLocationSearch = async() => {
+        setLocation(query);
+        setQuery('');
     }
     const searchBg = isNightMode
         ? "bg-gray-800/30"
@@ -21,8 +23,8 @@ const SearchBar = ({ isNightMode, location, setLocation }) => {
         <div className="relative mb-4 sm:mb-6">
             <input
                 type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 placeholder="Search location..."

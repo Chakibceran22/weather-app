@@ -15,11 +15,22 @@ const WeatherApp = () => {
         const fetchWeatherData = async () => {
             setIsLoading(true)
             try {
-                const forcast = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=auto:ip&days=7`)
-                console.log(forcast.data)
-                setWeather(forcast.data)
+                if (location == '') {
+                    const forcast = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=auto:ip&days=7`)
+                    setWeather(forcast.data)
+                }
+                else{
+                    try{
+                        const forecast = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7`)
+                        setWeather(forecast.data)
+                    }catch(error)
+                    {
+                        alert("Error in Country. Please try again.")
+                    }
+                }
+
             } catch (error) {
-                console.log(error)
+                alert('An error occurred. Please try again.')
             } finally {
                 setIsLoading(false)
             }
@@ -29,9 +40,8 @@ const WeatherApp = () => {
         const hour = new Date().getHours();
         setIsNightMode(hour >= 18 || hour < 6);
         // setIsNightMode(true); if someone is testing this code uncomment this ti activate niht mode if you are not in time
-        //this is justfor testing the loading if its functioning in front
 
-    }, []);
+    }, [location]);
 
 
 
@@ -90,7 +100,7 @@ const WeatherApp = () => {
                         </div>
 
                         <div className={`${cardBg} backdrop-blur-md rounded-lg p-4 sm:p-6`}>
-                            <h3 className="text-lg sm:text-xl font-bold text-white mb-4">6-Day Forecast</h3>
+                            <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Rest of the week</h3>
                             <div className="grid grid-cols-3 gap-2 sm:gap-4">
                                 {weather.forecast.forecastday.slice(1).map((item) => (
                                     <div key={item.date} className="text-center">
