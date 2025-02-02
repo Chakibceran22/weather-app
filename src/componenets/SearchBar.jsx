@@ -9,6 +9,11 @@ const SearchBar = ({ isNightMode, location, setLocation }) => {
         setLocation(query);
         setQuery('');
     }
+    const handleKeyDown = async(e) => {
+        if(e.key == 'Enter'){
+            await handleLocationSearch()
+        }
+    }
     const searchBg = isNightMode
         ? "bg-gray-800/30"
         : "bg-white/20";
@@ -27,6 +32,7 @@ const SearchBar = ({ isNightMode, location, setLocation }) => {
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
+                onKeyDown={handleKeyDown}
                 placeholder="Search location..."
                 className={`w-full p-3 sm:p-4 pr-12 rounded-lg ${searchBg} 
                     backdrop-blur-md text-white placeholder-white/70 
@@ -37,7 +43,8 @@ const SearchBar = ({ isNightMode, location, setLocation }) => {
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 
                     p-2 text-white/70 hover:text-white transition-colors 
                     duration-300 rounded-full hover:bg-white/10"
-                onClick={handleLocationSearch}
+                // onClick={handleLocationSearch}
+                
             >
                 <Search className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
