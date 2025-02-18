@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import axios from 'axios';
 
 const WeatherApp = () => {
-    const [location, setLocation] = useState('');
+    const [location, setLocation] = useState('Algiers');
     const [isLoading, setIsLoading] = useState(true);
     const [isNightMode, setIsNightMode] = useState(false);
     const apiKey = import.meta.env.VITE_API_KEY
@@ -44,22 +44,15 @@ const WeatherApp = () => {
         const fetchWeatherData = async () => {
             setIsLoading(true)
             try {
-                if (location == '') {
-                    const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=Algiers&appid=${apiKey}&units=metric`)
+                 
+                    const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiKey}&units=metric`)
                     setWeather(forecast.data)
                     console.log(forecast.data)
                     console.log(filterWeatherData(forecast.data))
                     setFilteredForecast(filterWeatherData(forecast.data))
                     setIsLoading(false)
-                }
-                else{
-                    try{
-                        setIsLoading(false)
-                    }catch(error)
-                    {
-                        alert("Error in Country. Please try again.")
-                    }
-                }
+                
+                
             } catch (error) {
                 alert('An error occurred. Please try again.')
             } 
@@ -72,7 +65,7 @@ const WeatherApp = () => {
 
     const getWeatherIcon = (description) => {
         const desc = description.toLowerCase();
-        if (desc.includes('rain')) return <CloudRain className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
+        if (desc.includes('rain')) return <CloudRain className="w-6 h-6 sm:w-8 sm:h-8 mx-auto  " />;
         if (desc.includes('cloud')) return <Cloud className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
         if (desc.includes('clear')) return isNightMode ? <Moon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" /> : <Sun className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
         if (desc.includes('snow')) return <Snowflake className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
@@ -99,12 +92,14 @@ const WeatherApp = () => {
                 ) : (
                     <>
                         <div className={`${cardBg} backdrop-blur-md rounded-lg p-3 sm:p-6 mb-3 sm:mb-6`}>
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 sm:mb-6">
+                            <div className="flex flex-row justify-between  sm:items-start mb-4 sm:mb-6">
                                 <div className="flex items-center gap-2 mb-3 sm:mb-0 text-white">
+                                    <div className='flex flex-row items-center'>
                                     {getWeatherIcon(weather.list[0].weather[0].description)}
-                                    <div>
+                                    <div className=' mx-2' >
                                         <h2 className="text-lg sm:text-2xl font-bold text-white">{weather.city.country}, {weather.city.name}</h2>
                                         <p className="text-sm sm:text-base text-white/70">{weather.list[0].weather[0].description}</p>
+                                    </div>
                                     </div>
                                 </div>
                                 <div className="text-center sm:text-right">
@@ -112,7 +107,7 @@ const WeatherApp = () => {
                                         {Math.round(weather.list[0].main.temp)}°C
                                     </div>
                                     <div className="text-xs sm:text-sm text-white/70">
-                                        H: {Math.round(weather.list[0].main.temp_max)}° L: {Math.round(weather.list[0].main.temp_min)}°
+                                        H: {weather.list[0].main.temp_max}° L: {weather.list[0].main.temp_min}°
                                     </div>
                                 </div>
                             </div>
