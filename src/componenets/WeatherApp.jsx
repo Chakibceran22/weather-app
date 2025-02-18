@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Cloud, Sun, CloudRain, Wind, Droplets, CloudSun, CloudFog, CloudLightning, Snowflake, Moon, CloudMoon, Truck } from 'lucide-react';
+import { Search, Cloud, Sun, CloudRain, Wind, Droplets, CloudSun, CloudFog, CloudLightning, Snowflake, Moon, CloudMoon, Truck, CloudDrizzle, CloudSnow } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import SearchBar from './SearchBar';
 import axios from 'axios';
 
 const WeatherApp = () => {
-    const [location, setLocation] = useState('');
+    const [location, setLocation] = useState('Algiers');
     const [isLoading, setIsLoading] = useState(true);
     const [isNightMode, setIsNightMode] = useState(false);
     const apiKey = import.meta.env.VITE_API_KEY
     const [weather, setWeather] = useState({})
     const [filteredForecast, setFilteredForecast] = useState([])
-    
+
     function filterWeatherData(data) {
         const dailyData = [];
-    
+
         data.list.forEach((forecast) => {
             const forecastDate = new Date(forecast.dt * 1000);
             const date = forecastDate.toISOString().split('T')[0];
-    
+
             let dayData = dailyData.find((item) => item.date === date);
-            
+
             if (!dayData) {
                 dayData = {
                     date: date,
@@ -36,7 +36,7 @@ const WeatherApp = () => {
                 dayData.maxTemp = Math.max(dayData.maxTemp, forecast.main.temp_max);
             }
         });
-    
+
         return dailyData;
     }
 
@@ -44,25 +44,18 @@ const WeatherApp = () => {
         const fetchWeatherData = async () => {
             setIsLoading(true)
             try {
-                if (location == '') {
-                    const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=Algiers&appid=${apiKey}&units=metric`)
-                    setWeather(forecast.data)
-                    console.log(forecast.data)
-                    console.log(filterWeatherData(forecast.data))
-                    setFilteredForecast(filterWeatherData(forecast.data))
-                    setIsLoading(false)
-                }
-                else{
-                    try{
-                        setIsLoading(false)
-                    }catch(error)
-                    {
-                        alert("Error in Country. Please try again.")
-                    }
-                }
+
+                const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiKey}&units=metric`)
+                setWeather(forecast.data)
+                console.log(forecast.data)
+                console.log(filterWeatherData(forecast.data))
+                setFilteredForecast(filterWeatherData(forecast.data))
+                setIsLoading(false)
+
+
             } catch (error) {
                 alert('An error occurred. Please try again.')
-            } 
+            }
         }
         fetchWeatherData()
 
@@ -72,13 +65,18 @@ const WeatherApp = () => {
 
     const getWeatherIcon = (description) => {
         const desc = description.toLowerCase();
-        if (desc.includes('rain')) return <CloudRain className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
-        if (desc.includes('cloud')) return <Cloud className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
-        if (desc.includes('clear')) return isNightMode ? <Moon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" /> : <Sun className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
-        if (desc.includes('snow')) return <Snowflake className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
-        if (desc.includes('fog') || desc.includes('mist')) return <CloudFog className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
-        if (desc.includes('thunder')) return <CloudLightning className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
-        return <CloudSun className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
+        if (desc.includes("clear sky")) return isNightMode ? <Moon className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" /> : <Sun className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("few clouds") || desc.includes("scattered clouds")) return <CloudSun className="w-6 h-6 sm:w-8 sm:h-8 mx-auto" />;
+        if (desc.includes("broken clouds") || desc.includes("overcast clouds")) return <Cloud className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("light rain") || desc.includes("moderate rain")) return <CloudDrizzle className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("heavy intensity rain") || desc.includes("very heavy rain") || desc.includes("extreme rain")) return <CloudRain className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("freezing rain")) return <Snowflake className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("drizzle")) return <CloudDrizzle className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("thunderstorm")) return <CloudLightning className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("snow") || desc.includes("sleet")) return <CloudSnow className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("fog") || desc.includes("mist") || desc.includes("haze")) return <CloudFog className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        if (desc.includes("tornado") || desc.includes("squalls") || desc.includes("volcanic ash")) return <Tornado className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
+        return <CloudSun className="w-6 h-6 sm:w-8 sm:h-8  mx-auto" />;
     };
 
     const bgGradient = isNightMode
@@ -99,12 +97,14 @@ const WeatherApp = () => {
                 ) : (
                     <>
                         <div className={`${cardBg} backdrop-blur-md rounded-lg p-3 sm:p-6 mb-3 sm:mb-6`}>
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 sm:mb-6">
+                            <div className="flex flex-row justify-between  sm:items-start mb-4 sm:mb-6">
                                 <div className="flex items-center gap-2 mb-3 sm:mb-0 text-white">
-                                    {getWeatherIcon(weather.list[0].weather[0].description)}
-                                    <div>
-                                        <h2 className="text-lg sm:text-2xl font-bold text-white">{weather.city.country}, {weather.city.name}</h2>
-                                        <p className="text-sm sm:text-base text-white/70">{weather.list[0].weather[0].description}</p>
+                                    <div className='flex flex-row items-center'>
+                                        {getWeatherIcon(weather.list[0].weather[0].description)}
+                                        <div className=' mx-2' >
+                                            <h2 className="text-lg sm:text-2xl font-bold text-white">{weather.city.country}, {weather.city.name}</h2>
+                                            <p className="text-sm sm:text-base text-white/70">{weather.list[0].weather[0].description}</p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="text-center sm:text-right">
@@ -112,7 +112,7 @@ const WeatherApp = () => {
                                         {Math.round(weather.list[0].main.temp)}°C
                                     </div>
                                     <div className="text-xs sm:text-sm text-white/70">
-                                        H: {Math.round(weather.list[0].main.temp_max)}° L: {Math.round(weather.list[0].main.temp_min)}°
+                                        H: {weather.list[0].main.temp_max}° L: {weather.list[0].main.temp_min}°
                                     </div>
                                 </div>
                             </div>
