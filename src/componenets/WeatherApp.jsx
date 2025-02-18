@@ -5,12 +5,14 @@ import SearchBar from './SearchBar';
 import axios from 'axios';
 
 const WeatherApp = () => {
-    const [location, setLocation] = useState('Algiers');
+    const [location, setLocation] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isNightMode, setIsNightMode] = useState(false);
     const apiKey = import.meta.env.VITE_API_KEY
     const [weather, setWeather] = useState({})
     const [filteredForecast, setFilteredForecast] = useState([])
+    const [lon, setLon] = useState(0)
+    const [lat, setLat] = useState(0)
 
     function filterWeatherData(data) {
         const dailyData = [];
@@ -39,29 +41,59 @@ const WeatherApp = () => {
 
         return dailyData;
     }
+    useEffect(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              console.log(latitude, longitude);
+                setLat(latitude)
+                setLon(longitude)
+            },
+            (error) => {
+              setError("Location permission denied or unavailable.");
+            }
+          );
+        } else {
+          setError("Geolocation is not supported by this browser.");
+        }
+      }, []);
 
     useEffect(() => {
         const fetchWeatherData = async () => {
             setIsLoading(true)
+            if(lat === 0 && lon === 0){
+                setIsLoading(true)
+                return;
+            }
             try {
-
-                const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiKey}&units=metric`)
-                setWeather(forecast.data)
-                console.log(forecast.data)
-                console.log(filterWeatherData(forecast.data))
-                setFilteredForecast(filterWeatherData(forecast.data))
-                setIsLoading(false)
+            
+                if( location == ''){
+                    const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
+                    setWeather(forecast.data)
+                    console.log(forecast.data)
+                    console.log(filterWeatherData(forecast.data))
+                    setFilteredForecast(filterWeatherData(forecast.data))
+                }
+                else{
+                    const forecast = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiKey}&units=metric`)
+                    setWeather(forecast.data)
+                    setFilteredForecast(filterWeatherData(forecast.data))
+                }
 
 
             } catch (error) {
                 alert('An error occurred. Please try again.')
+            }
+            finally{
+                setIsLoading(false)
             }
         }
         fetchWeatherData()
 
         const hour = new Date().getHours();
         setIsNightMode(hour >= 18 || hour < 6);
-    }, [location]);
+    }, [lat, lon,location]);
 
     const getWeatherIcon = (description) => {
         const desc = description.toLowerCase();
